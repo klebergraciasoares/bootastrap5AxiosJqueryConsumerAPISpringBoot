@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Get API Spring Boot Html and Jquery</title>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js" crossorigin="anonymous" ></script>
+        <script src="script.js"></script>
+    </head>
+
+    <body>
+        <div>
+            <p class="greeting-id">ID: </p>
+            <p class="greeting-description">Description: </p> 
+        </div>
+		
+		
+		
+		
+<div id="resultado">
+
+<?Php
+    include('conecta.php');
+	
+	//Paginacao
+	if ($stmt = $mysqli->prepare("SELECT COUNT(*), SUM(id = ?) FROM produtos")) {
+		$requ = 1;
+		$stmt->bind_param("i", $requ);
+		$stmt->execute();
+		$stmt->bind_result($totalcount, $count);
+		$stmt->fetch();
+		$stmt->close();
+		$stmt = null;
+	}
+	echo('Total de Produtos: ' .$totalcount);
+	
+	if (isset($_GET['pageno'])) {
+		$pageno = $_GET['pageno'];
+	} else {
+		$pageno = 1;
+	}
+	$no_of_records_per_page = 10;
+	$offset = ($pageno-1) * $no_of_records_per_page;	
+	$total_pages_sql = $totalcount;
+	$result = $total_pages_sql;
+	$total_rows = $result;
+	$total_pages = ceil($total_rows / $no_of_records_per_page); 
+	//FINALIZADO PAGINACAO
+
+    $sql = $mysqli->prepare('select id, produto, valor from produtos order by id desc LIMIT '.$offset.', '.$no_of_records_per_page.''); 
+    $sql->execute();
+    $sql->bind_result($id, $produto, $valor);
+
+    echo "
+        <table class='table'>
+            <thead>
+                <tr>
+                    <td>Id</td>
+                    <td>Produtos</td>
+                    <td>Valor</td>
+                </tr>
+            </thead>
+
+            <tbody>
+    ";
+
+    while($sql->fetch()){
+
+    echo "
+        <tr>
+            <td data-nome='$id' id='idProduct' name='idProduct' class='idProduct'>$id</td>
+            <td data-produto='$produto' >".utf8_encode($produto)."</td> 
+            <td data-valor='$valor'>$valor</td>
+        </tr>
+    ";
+    }
+
+    echo "
+        </tbody>
+    </table>
+    ";
+
+?>
+</div>		
+		
+		
+		
+		
+    </body>
+</html>
